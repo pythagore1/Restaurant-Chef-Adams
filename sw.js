@@ -1,5 +1,5 @@
 // Chef Adams — Service Worker v1
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = 'chef-adams-' + CACHE_VERSION;
 
 const PRECACHE_URLS = [
@@ -44,6 +44,7 @@ self.addEventListener('fetch', function(event) {
       !url.hostname.includes('fonts.gstatic.com') &&
       !url.hostname.includes('i.ibb.co')) return;
 
+  // Images externes (imgbb) — cache-first
   if (url.hostname.includes('i.ibb.co')) {
     event.respondWith(
       caches.match(event.request).then(function(cached) {
@@ -60,6 +61,7 @@ self.addEventListener('fetch', function(event) {
     return;
   }
 
+  // Fonts — cache-first
   if (url.hostname.includes('fonts.')) {
     event.respondWith(
       caches.match(event.request).then(function(cached) {
@@ -70,25 +72,33 @@ self.addEventListener('fetch', function(event) {
             caches.open(CACHE_NAME).then(function(cache) { cache.put(event.request, toCache); });
           }
           return response;
+        }).catch(function() { return new Response('', { status: 503 }); });
+      })
+    );
+    return;
+  }
+
+  // index.html — CACHE-FIRST (correction ecran noir PWA)
+  // Sert le cache immediatement, revalide en arriere-plan
+  if (url.pathname === '/' || url.pathname === '/index.html') {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(function(cache) {
+        return cache.match('/index.html').then(function(cached) {
+          var fetchPromise = fetch(event.request).then(function(response) {
+            if (response && response.status === 200) {
+              cache.put('/index.html', response.clone());
+              cache.put('/', response.clone());
+            }
+            return response;
+          }).catch(function() { return null; });
+          return cached || fetchPromise;
         });
       })
     );
     return;
   }
 
-  if (url.pathname === '/' || url.pathname === '/index.html') {
-    event.respondWith(
-      fetch(event.request).then(function(response) {
-        if (response && response.status === 200) {
-          var toCache = response.clone();
-          caches.open(CACHE_NAME).then(function(cache) { cache.put(event.request, toCache); });
-        }
-        return response;
-      }).catch(function() { return caches.match('/index.html'); })
-    );
-    return;
-  }
-
+  // Tous les autres assets — cache-first
   event.respondWith(
     caches.match(event.request).then(function(cached) {
       if (cached) return cached;

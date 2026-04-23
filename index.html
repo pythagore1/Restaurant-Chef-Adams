@@ -310,6 +310,14 @@ footer{background:var(--dark2);border-top:1px solid rgba(192,57,43,.15);padding:
 </head>
 <body>
 
+<!-- SPLASH SCREEN PWA - evite ecran noir au demarrage -->
+<div id="splashScreen" style="position:fixed;inset:0;background:#0A0A0A;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .4s ease">
+  <img src="/icons/icon-192.png" alt="Chef Adams" style="width:96px;height:96px;border-radius:22px;box-shadow:0 8px 32px rgba(192,57,43,.4)"/>
+  <div style="font-family:Georgia,serif;font-size:26px;color:#fff;letter-spacing:1px">Chef <span style="color:#C0392B">Adams</span></div>
+  <div style="width:48px;height:3px;background:#C0392B;border-radius:99px;animation:splashBar 1.2s ease-in-out infinite alternate"></div>
+  <style>@keyframes splashBar{from{width:28px;opacity:.5}to{width:64px;opacity:1}}</style>
+</div>
+
 <!-- PWA BAR -->
 <div id="pwaBar">
   <div style="width:40px;height:40px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">&#127869;</div>
@@ -644,7 +652,14 @@ function applyLang(){
   document.getElementById("pwaBtnInstall").textContent=tx("pwaBtn");
   renderSteps();renderProducts();renderPayCards();updateWaLinks();
 }
-function toggleLang(){lang=lang==="fr"?"en":"fr";applyLang();}
+function toggleLang(){lang=lang==="fr"?"en":"fr";applyLang();
+// Masquer le splash screen une fois tout charge
+(function(){
+  var sp=document.getElementById("splashScreen");
+  if(!sp)return;
+  sp.style.opacity="0";
+  setTimeout(function(){sp.style.display="none";},450);
+})();}
 
 // ====== DATA ======
 var DEF_PRODUCTS=[
@@ -1866,6 +1881,13 @@ renderProducts();
 renderPayCards();
 updateWaLinks();
 applyLang();
+// Masquer le splash screen une fois tout charge
+(function(){
+  var sp=document.getElementById("splashScreen");
+  if(!sp)return;
+  sp.style.opacity="0";
+  setTimeout(function(){sp.style.display="none";},450);
+})();
 </script>
 </body>
 </html>
