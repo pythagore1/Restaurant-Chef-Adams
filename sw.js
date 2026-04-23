@@ -1,6 +1,6 @@
-// Ruach Resto — Service Worker v1
-const CACHE_VERSION = 'v1';
-const CACHE_NAME = 'ruach-resto-' + CACHE_VERSION;
+// Chef Adams — Service Worker v1
+const CACHE_VERSION = 'v2';
+const CACHE_NAME = 'chef-adams-' + CACHE_VERSION;
 
 const PRECACHE_URLS = [
   '/',
@@ -25,7 +25,7 @@ self.addEventListener('activate', function(event) {
     caches.keys().then(function(cacheNames) {
       return Promise.all(
         cacheNames.filter(function(name) {
-          return name.startsWith('ruach-resto-') && name !== CACHE_NAME;
+          return name.startsWith('chef-adams-') && name !== CACHE_NAME;
         }).map(function(name) {
           return caches.delete(name);
         })
