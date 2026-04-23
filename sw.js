@@ -1,5 +1,5 @@
 // Chef Adams — Service Worker v1
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = 'chef-adams-' + CACHE_VERSION;
 
 const PRECACHE_URLS = [
